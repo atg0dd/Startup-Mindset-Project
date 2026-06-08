@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A+I University - Korean e-learning platform for AI thinking, prompt sharing, and collaborative study" />
+  <title>A+I University</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #08090c;
+      --surface: #111318;
+      --surface-2: #1a1d24;
+      --border: rgba(255, 255, 255, 0.07);
+      --accent: #7c6bff;
+      --accent-2: #00d4aa;
+      --accent-warm: #f5a623;
+      --text: #f0f0f2;
+      --text-muted: #6b7280;
+      --text-dim: #374151;
+      --radius-card: 12px;
+      --radius-input: 8px;
+      --radius-pill: 999px;
+      --sidebar-width: 220px;
+      --nav-height: 72px;
+      --transition: 0.2s ease;
+      --shadow-accent: 0 8px 24px rgba(124, 107, 255, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124, 107, 255, 0.14), transparent 26%),
+        radial-gradient(circle at 80% 10%, rgba(0, 212, 170, 0.08), transparent 24%),
+        linear-gradient(180deg, #08090c 0%, #090a0f 100%);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 56px 56px;
+      opacity: 0.22;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.35), transparent 75%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      height: var(--nav-height);
+      display: grid;
+      grid-template-columns: 220px 1fr auto;
+      align-items: center;
+      gap: 24px;
+      padding: 0 24px 0 calc(var(--sidebar-width) + 24px);
+      background: rgba(8, 9, 12, 0.74);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      line-height: 1;
+      min-width: 120px;
+    }
+
+    .brand-mark {
+      font-weight: 700;
+      font-size: 24px;
+      letter-spacing: -0.05em;
+    }
+
+    .brand-sub {
+      margin-top: 4px;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .search {
+      justify-self: center;
+      width: min(100%, 540px);
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .search span { color: var(--text-dim); }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .link-text {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      border-radius: var(--radius-pill);
+      padding: 11px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: transform var(--transition), background var(--transition), border-color var(--transition), box-shadow var(--transition), color var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn:hover,
+    .nav-item:hover,
+    .course-card:hover,
+    .prompt-card:hover,
+    .room-card:hover,
+    .instructor-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: var(--shadow-accent);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn-warm {
+      background: var(--accent-warm);
+      color: #131313;
+    }
+
+    .sidebar {
+      position: fixed;
+      inset: var(--nav-height) auto 0 0;
+      width: var(--sidebar-width);
+      padding: 18px 14px 16px;
+      border-right: 1px solid var(--border);
+      background: rgba(8, 9, 12, 0.94);
+      backdrop-filter: blur(12px);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .sidebar .brand {
+      padding: 8px 10px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .side-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 12px 12px 12px 14px;
+      border-radius: 12px;
+      color: var(--text);
+      transition: transform var(--transition), background var(--transition), border-color var(--transition), box-shadow var(--transition);
+      border: 1px solid transparent;
+      position: relative;
+    }
+
+    .nav-item.active {
+      background: var(--surface-2);
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+      box-shadow: inset 0 0 0 1px rgba(124, 107, 255, 0.06);
+    }
+
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      flex: 0 0 auto;
+    }
+
+    .nav-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding-top: 16px;
+    }
+
+    .main {
+      margin-left: var(--sidebar-width);
+      padding: 32px 40px 40px;
+    }
+
+    .section {
+      margin-bottom: 34px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .section-more {
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .section-subtitle {
+      margin-top: -8px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .hero-card {
+      min-height: 240px;
+      border: 1px solid rgba(124, 107, 255, 0.22);
+      border-radius: 22px;
+      background:
+        radial-gradient(ellipse at 70% 50%, rgba(124, 107, 255, 0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 10% 80%, rgba(0, 212, 170, 0.09) 0%, transparent 40%),
+        linear-gradient(135deg, #15103a 0%, #0b1a30 60%, #0a0f1e 100%);
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 32px;
+      padding: 36px 40px 36px 40px;
+      isolation: isolate;
+      box-shadow: 0 0 0 1px rgba(124, 107, 255, 0.06), 0 24px 48px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(124,107,255,0.14), transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-card::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: 30%;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(0,212,170,0.07), transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      background: rgba(124, 107, 255, 0.18);
+      border: 1px solid rgba(124, 107, 255, 0.32);
+      color: #dcd8ff;
+      font-size: 12px;
+      font-weight: 600;
+      width: fit-content;
+      margin-bottom: 16px;
+      letter-spacing: 0.01em;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: clamp(30px, 3.2vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      max-width: 14ch;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, rgba(220, 216, 255, 0.9) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-copy p {
+      margin-top: 12px;
+      color: rgba(240,240,242,0.62);
+      font-size: 14px;
+      max-width: 44ch;
+      line-height: 1.6;
+      -webkit-text-fill-color: rgba(240,240,242,0.62);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 24px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .hero-stat span {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.03em;
+    }
+
+    .hero-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      flex: 0 0 auto;
+    }
+
+    .hero-orb {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      position: relative;
+      background: radial-gradient(circle at 38% 36%, rgba(255,255,255,0.22), rgba(124,107,255,0.18) 40%, transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(124, 107, 255, 0.3),
+        0 0 0 16px rgba(124, 107, 255, 0.06),
+        0 0 0 32px rgba(124, 107, 255, 0.03),
+        0 0 60px rgba(124, 107, 255, 0.35),
+        0 0 100px rgba(124, 107, 255, 0.18),
+        inset 0 0 30px rgba(255,255,255,0.06);
+      animation: pulseGlow 4s ease-in-out infinite;
+    }
+
+    .hero-orb::before {
+      content: '';
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: radial-gradient(circle at 36% 34%, rgba(255,255,255,0.14), transparent 55%);
+    }
+
+    .hero-orb::after {
+      content: 'A+I';
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: rgba(255,255,255,0.82);
+    }
+
+    .cards-row {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .cards-row::-webkit-scrollbar { display: none; }
+
+    .course-card {
+      flex: 0 0 240px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+
+    .thumb {
+      position: relative;
+      overflow: hidden;
+      height: 160px;
+    }
+
+    .thumb::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 25% 22%, rgba(255,255,255,0.14), transparent 22%),
+        radial-gradient(circle at 72% 68%, rgba(255,255,255,0.08), transparent 26%);
+      pointer-events: none;
+    }
+
+    .thumb-label {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: rgba(0,0,0,0.24);
+      padding: 6px 10px;
+      border-radius: 10px;
+      backdrop-filter: blur(4px);
+    }
+
+    .course-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 6px 8px;
+      border-radius: var(--radius-pill);
+      background: var(--accent);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .best-badge,
+    .new-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 6px 8px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .best-badge { background: var(--accent-2); color: #062620; }
+    .new-badge { background: var(--accent-2); color: #062620; }
+
+    .card-body { padding: 12px; }
+
+    .instructor {
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .course-title {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 34px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .meta-row,
+    .price-row,
+    .prompt-footer,
+    .room-footer,
+    .room-header,
+    .prompt-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .meta-row {
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .stars { color: var(--accent-warm); }
+
+    .price-row strong {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .price-row del {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .scroll-row {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .scroll-row::-webkit-scrollbar { display: none; }
+
+    .filter-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .filter-pill {
+      padding: 9px 14px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-2);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .filter-pill.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .prompt-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .prompt-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 16px;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+      box-shadow: 0 0 0 rgba(0,0,0,0);
+    }
+
+    .prompt-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(124, 107, 255, 0.12), inset 0 0 24px rgba(124, 107, 255, 0.05);
+    }
+
+    .prompt-top { margin-bottom: 14px; }
+
+    .category-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(124, 107, 255, 0.14);
+      color: #dcd8ff;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .copy-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition), border-color var(--transition);
+    }
+
+    .copy-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(124, 107, 255, 0.08);
+    }
+
+    .prompt-text {
+      margin: 0 0 14px;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.55;
+      font-family: 'Courier New', monospace;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+      min-height: 61px;
+    }
+
+    .prompt-footer {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      font-size: 12px;
+      color: var(--text-muted);
+      justify-content: space-between;
+    }
+
+    .author {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    .room-card {
+      flex: 0 0 300px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-card);
+      padding: 16px;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+
+    .live-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      animation: pulse 1.4s ease-in-out infinite;
+      box-shadow: 0 0 0 4px rgba(0, 212, 170, 0.08);
+    }
+
+    .room-title {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    .room-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-2);
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+
+    .participant-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .participant-stack {
+      display: flex;
+      align-items: center;
+    }
+
+    .participant {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      margin-right: -8px;
+      border: 2px solid var(--surface);
+    }
+
+    .participant.p1 { background: linear-gradient(135deg, #7c6bff, #4b5bff); }
+    .participant.p2 { background: linear-gradient(135deg, #00d4aa, #0ea5e9); }
+    .participant.p3 { background: linear-gradient(135deg, #f5a623, #ef4444); }
+    .participant.p4 { background: linear-gradient(135deg, #94a3b8, #64748b); }
+
+    .join-btn {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: 13px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+
+    .join-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-accent); }
+
+    .instructor-card {
+      flex: 0 0 160px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      text-align: center;
+      padding: 18px 14px 16px;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+
+    .instructor-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      box-shadow: inset 0 0 18px rgba(255,255,255,0.08);
+    }
+
+    .inst-1 { background: radial-gradient(circle at 30% 30%, #fff, #7c6bff 38%, #20243a 72%); }
+    .inst-2 { background: radial-gradient(circle at 32% 30%, #fff, #00d4aa 38%, #163033 72%); }
+    .inst-3 { background: radial-gradient(circle at 34% 30%, #fff, #f5a623 38%, #34261a 72%); }
+    .inst-4 { background: radial-gradient(circle at 30% 30%, #fff, #38bdf8 38%, #14223c 72%); }
+
+    .instructor-card .name {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .specialty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      min-height: 34px;
+      margin-bottom: 12px;
+    }
+
+    .follow-btn {
+      width: 100%;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition), transform var(--transition);
+    }
+
+    .follow-btn:hover {
+      border-color: var(--accent);
+      background: rgba(124, 107, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .hero-copy,
+    .section-header,
+    .cards-row,
+    .scroll-row,
+    .filter-row,
+    .prompt-grid,
+    .section-subtitle,
+    .hero-card {
+      animation: fadeIn 0.6s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow:
+          0 0 0 18px rgba(255,255,255,0.02),
+          0 0 40px rgba(255,255,255,0.08),
+          0 0 80px rgba(124,107,255,0.22),
+          inset 0 0 24px rgba(255,255,255,0.04);
+      }
+      50% {
+        transform: scale(1.03);
+        box-shadow:
+          0 0 0 20px rgba(255,255,255,0.02),
+          0 0 52px rgba(255,255,255,0.1),
+          0 0 96px rgba(124,107,255,0.3),
+          inset 0 0 28px rgba(255,255,255,0.06);
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .prompt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 768px) {
+      .topbar {
+        padding-left: 16px;
+        padding-right: 16px;
+        grid-template-columns: 1fr;
+        height: auto;
+        gap: 14px;
+        padding-top: 14px;
+        padding-bottom: 14px;
+      }
+
+      .search { width: 100%; justify-self: stretch; }
+      .top-actions { display: none; }
+
+      .sidebar {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 72px;
+        padding: 8px 8px 10px;
+        border-right: none;
+        border-top: 1px solid var(--border);
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+        overflow-x: auto;
+      }
+
+      .sidebar .brand,
+      .sidebar-bottom,
+      .nav-label,
+      .sidebar .btn-warm {
+        display: none;
+      }
+
+      .sidebar .nav-item:nth-child(5) {
+        display: none;
+      }
+
+      .side-nav {
+        flex-direction: row;
+        gap: 8px;
+        margin-top: 0;
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .nav-item {
+        flex-direction: column;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 6px;
+        min-width: 54px;
+        flex: 1 0 0;
+      }
+
+      .nav-item.active { border-left: none; border-top: 2px solid var(--accent); }
+      .nav-icon { width: 20px; height: 20px; font-size: 14px; }
+
+      .main {
+        margin-left: 0;
+        padding: 18px 16px 96px;
+      }
+
+      .hero-card {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 28px 24px;
+      }
+
+      .hero-right { flex-direction: row; justify-content: center; }
+      .hero-stats { gap: 16px; }
+      .prompt-grid { grid-template-columns: 1fr; }
+      .section-header { align-items: flex-start; flex-direction: column; }
+      .cards-row,
+      .scroll-row { padding-bottom: 4px; }
+      .course-card { flex-basis: 230px; }
+      .room-card { flex-basis: 280px; }
+      .instructor-card { flex-basis: 150px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title { font-size: 28px; }
+      .hero-card { padding: 20px; }
+      .course-card { flex-basis: 220px; }
+      .room-card { flex-basis: 250px; }
+    }
+
+    /* ── Student categorization track ── */
+    .track-toggle {
+      display: inline-flex;
+      padding: 4px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      margin-bottom: 20px;
+      gap: 2px;
+    }
+
+    .tt-btn {
+      padding: 9px 22px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .tt-btn.active-pre {
+      background: var(--accent-warm);
+      color: #1a0f00;
+      box-shadow: 0 2px 8px rgba(245, 166, 35, 0.3);
+    }
+
+    .tt-btn.active-post {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(124, 107, 255, 0.35);
+    }
+
+    .track-panel { display: none; }
+    .track-panel.visible { display: block; }
+
+    /* Banner: two-column info card */
+    .track-banner {
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 172px 1fr;
+      overflow: hidden;
+    }
+
+    .track-banner.pre { border-top: 2px solid var(--accent-warm); }
+    .track-banner.post { border-top: 2px solid var(--accent); }
+
+    .track-year-col {
+      padding: 22px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .track-year-num {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .track-banner.pre .track-year-num { color: var(--accent-warm); }
+    .track-banner.post .track-year-num { color: #dcd8ff; }
+
+    .track-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 700;
+      width: fit-content;
+    }
+
+    .track-status.needed {
+      background: rgba(245, 166, 35, 0.14);
+      color: var(--accent-warm);
+      border: 1px solid rgba(245, 166, 35, 0.28);
+    }
+
+    .track-status.done {
+      background: rgba(0, 212, 170, 0.12);
+      color: #7fffd4;
+      border: 1px solid rgba(0, 212, 170, 0.22);
+    }
+
+    .track-course-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .track-course-count strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .track-info-col {
+      padding: 20px 24px;
+      background: var(--surface);
+    }
+
+    .track-info-col h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .track-info-col p {
+      margin: 0 0 14px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 60ch;
+    }
+
+    .track-chip-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chip-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .chip-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      min-width: 28px;
+    }
+
+    .track-chip {
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .track-chip.required {
+      background: rgba(245, 166, 35, 0.14);
+      color: var(--accent-warm);
+      border: 1px solid rgba(245, 166, 35, 0.26);
+    }
+
+    .track-chip.ai-core {
+      background: rgba(124, 107, 255, 0.14);
+      color: #dcd8ff;
+      border: 1px solid rgba(124, 107, 255, 0.26);
+    }
+
+    .track-chip.elective {
+      background: rgba(255,255,255,0.04);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    @media (max-width: 768px) {
+      .track-banner { grid-template-columns: 1fr; }
+      .track-year-col { border-right: none; border-bottom: 1px solid var(--border); flex-direction: row; align-items: center; gap: 12px; padding: 16px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="A plus I University home">
+      <span class="brand-mark">A+I</span>
+      <span class="brand-sub">UNIVERSITY</span>
+    </a>
+
+    <div class="search" role="search" aria-label="Search courses and prompts">
+      <span>⌕</span>
+      <span>강의, 프롬프트, 스터디룸 검색</span>
+    </div>
+
+    <div class="top-actions">
+      <a class="link-text" href="#">강사 되기</a>
+      <a class="btn btn-ghost" href="#">회원가입</a>
+      <a class="btn btn-primary" href="#">로그인</a>
+    </div>
+  </header>
+
+  <aside class="sidebar" aria-label="Primary navigation sidebar">
+    <a class="brand" href="#home">
+      <span class="brand-mark">A+I</span>
+      <span class="brand-sub">UNIVERSITY</span>
+    </a>
+
+    <nav class="side-nav">
+      <a class="nav-item active" href="#home"><span class="nav-icon">🏠</span><span class="nav-label">홈</span></a>
+      <a class="nav-item" href="#lectures"><span class="nav-icon">📚</span><span class="nav-label">강의실</span></a>
+      <a class="nav-item" href="#prompts"><span class="nav-icon">✨</span><span class="nav-label">프롬프트 공유</span></a>
+      <a class="nav-item" href="#study"><span class="nav-icon">👥</span><span class="nav-label">함께 공부하기</span></a>
+      <a class="nav-item" href="#record"><span class="nav-icon">📝</span><span class="nav-label">나의 학습 기록</span></a>
+      <a class="nav-item" href="#profile"><span class="nav-icon">👤</span><span class="nav-label">프로필</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <a class="btn btn-warm" href="#">+ 강사 신청</a>
+    </div>
+  </aside>
+
+  <main class="main" id="home">
+    <section class="section">
+      <div class="hero-card">
+        <div class="hero-copy">
+          <div class="hero-badge">✦ AI 가상 대학교</div>
+          <h1 class="hero-title">AI와 함께 사고하는 법을 배웁니다</h1>
+          <p>단순한 AI 활용이 아닌, AI 시대의 사고력을 키우는 곳</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#lectures">강의 탐색하기</a>
+            <a class="btn btn-ghost" href="#">대학 소개</a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat"><strong>2,400+</strong><span>수강생</span></div>
+            <div class="hero-stat"><strong>38</strong><span>강의</span></div>
+            <div class="hero-stat"><strong>★ 4.8</strong><span>평균 평점</span></div>
+          </div>
+        </div>
+        <div class="hero-right" aria-hidden="true">
+          <div class="hero-orb"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="tracks">
+      <div class="section-header">
+        <h2 class="section-title">학생 맞춤 강의 트랙</h2>
+      </div>
+      <div class="section-subtitle">입학 연도에 따라 AI 필수과목 이수 여부가 다릅니다. 본인 트랙을 선택하세요.</div>
+
+      <div class="track-toggle" role="tablist" aria-label="Student cohort track selection">
+        <button class="tt-btn active-pre" role="tab" aria-selected="true" aria-controls="panel-pre" id="tab-pre" onclick="switchTrack('pre')">~ 2024 입학생</button>
+        <button class="tt-btn" role="tab" aria-selected="false" aria-controls="panel-post" id="tab-post" onclick="switchTrack('post')">2025 ~ 입학생</button>
+      </div>
+
+      <!-- Pre-2025 panel -->
+      <div class="track-panel visible" id="panel-pre" role="tabpanel" aria-labelledby="tab-pre">
+        <div class="track-banner pre">
+          <div class="track-year-col">
+            <div>
+              <div class="track-year-num">~ 2024<br>입학생</div>
+            </div>
+            <span class="track-status needed">● 이수 필요</span>
+            <div class="track-course-count"><strong>필수 3개</strong> · 선택 2개<br>총 5개 과정</div>
+          </div>
+          <div class="track-info-col">
+            <h3>AI 보충 특화 과정</h3>
+            <p>입학 당시 AI 필수과목이 교육과정에 포함되지 않았습니다. 아래 과정을 이수하면 2025년 이후 학생과 동등한 AI 역량을 인정받습니다.</p>
+            <div class="track-chip-section">
+              <div class="chip-row">
+                <span class="chip-label">필수</span>
+                <span class="track-chip required">AI 사고법 기초</span>
+                <span class="track-chip required">프롬프트 설계 입문</span>
+                <span class="track-chip required">AI 윤리 개론</span>
+              </div>
+              <div class="chip-row">
+                <span class="chip-label">선택</span>
+                <span class="track-chip elective">비판적 읽기</span>
+                <span class="track-chip elective">지식 재구성</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cards-row">
+          <article class="course-card">
+            <div class="thumb" style="background: linear-gradient(135deg, #2e1a00, #5a3800);">
+              <span class="course-badge">필수 보충</span>
+              <span class="best-badge">START</span>
+              <span class="thumb-label">AI 사고법 기초</span>
+            </div>
+            <div class="card-body">
+              <div class="instructor">김민준 교수</div>
+              <div class="course-title">AI 시대의 사고 구조 — 읽고, 판단하고, 재구성하기</div>
+              <div class="meta-row"><span class="stars">★ 4.9</span><span>👁 2.1k</span></div>
+              <div class="price-row"><strong>무료</strong><del>59,000원</del></div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="thumb" style="background: linear-gradient(135deg, #0d2137, #1b4332);">
+              <span class="course-badge">필수 보충</span>
+              <span class="thumb-label">프롬프트 입문</span>
+            </div>
+            <div class="card-body">
+              <div class="instructor">박서연 교수</div>
+              <div class="course-title">처음 배우는 프롬프트 설계 — 좋은 질문의 구조</div>
+              <div class="meta-row"><span class="stars">★ 4.8</span><span>👁 1.8k</span></div>
+              <div class="price-row"><strong>29,000원</strong><del>59,000원</del></div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="thumb" style="background: linear-gradient(135deg, #0a3d62, #1e3799);">
+              <span class="course-badge">필수 보충</span>
+              <span class="thumb-label">AI 윤리 개론</span>
+            </div>
+            <div class="card-body">
+              <div class="instructor">최유진 교수</div>
+              <div class="course-title">AI를 책임 있게 사용하는 기준과 판단</div>
+              <div class="meta-row"><span class="stars">★ 4.7</span><span>👁 1.4k</span></div>
+              <div class="price-row"><strong>29,000원</strong><del>59,000원</del></div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="thumb" style="background: linear-gradient(135deg, #1f0533, #6a0572);">
+              <span class="course-badge">선택</span>
+              <span class="thumb-label">비판적 읽기</span>
+            </div>
+            <div class="card-body">
+              <div class="instructor">이도현 교수</div>
+              <div class="course-title">AI 결과를 검증하고 반박하는 비판적 읽기</div>
+              <div class="meta-row"><span class="stars">★ 4.8</span><span>👁 1.2k</span></div>
+              <div class="price-row"><strong>59,000원</strong><del>89,000원</del></div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- Post-2025 panel -->
+      <div class="track-panel" id="panel-post" role="tabpanel" aria-labelledby="tab-post">
+        <div class="track-banner post">
+          <div class="track-year-col">
+            <div>
+              <div class="track-year-num">2025 ~<br>입학생</div>
+            </div>
+            <span class="track-status done">✓ 필수 이수</span>
+            <div class="track-course-count"><strong>심화 2개</strong> · 선택 2개<br>총 4개 과정</div>
+          </div>
+          <div class="track-info-col">
+            <h3>AI 심화 특화 과정</h3>
+            <p>AI 필수과목이 이미 이수되어 있습니다. 기초 위에서 심화 사고력과 고급 프롬프트 역량을 키우는 전문 과정을 수강하세요.</p>
+            <div class="track-chip-section">
+              <div class="chip-row">
+                <span class="chip-label">심화</span>
+                <span class="track-chip ai-core">AI 심화 사고법</span>
+                <span class="track-chip ai-core">고급 프롬프트 엔지니어링</span>
+              </div>
+              <div class="chip-row">
+                <span class="chip-label">선택</span>
+                <span class="track-chip elective">AI 협업 프로젝트</span>
+                <span class="track-chip elective">AI × 창의 융합</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cards-row">
+          <article class="course-card">
+            <div class="thumb" style="background: linear-gradient(135deg, #1a1a2e, #2d1b69);">
+              <span class="course-badge">심화</span>
+              <span class="best-badge">BEST</span>
+              <span class="thumb-label">AI 심화 사고법</span>
+            </div>
+            <div class="card-body">
+              <div class="instructor">김민준 교수</div>
+              <div class="course-title">AI 답변을 읽고, 해석하고, 재구성하는 고급 사고 기술</div>
+              <div class="meta-row"><span class="stars">★ 4.9</span><span>👁 3.4k</span></div>
+              <div class="price-row"><strong>79,000원</strong><del>119,000원</del></div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="thumb" style="background: linear-gradient(135deg, #0d2137, #1b4332);">
+              <span class="course-badge">심화</span>
+              <span class="thumb-label">고급 프롬프트</span>
+            </div>
+            <div class="card-body">
+              <div class="instructor">박서연 교수</div>
+              <div class="course-title">Chain-of-Thought부터 멀티턴 설계까지 — 고급 프롬프트 엔지니어링</div>
+              <div class="meta-row"><span class="stars">★ 4.9</span><span>👁 2.7k</span></div>
+              <div class="price-row"><strong>79,000원</strong><del>119,000원</del></div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="thumb" style="background: linear-gradient(135deg, #1a2e1a, #2d5a27);">
+              <span class="course-badge">선택</span>
+              <span class="thumb-label">AI 협업 프로젝트</span>
+            </div>
+            <div class="card-body">
+              <div class="instructor">한지우 교수</div>
+              <div class="course-title">팀과 AI를 함께 활용하는 협업 프로젝트 설계</div>
+              <div class="meta-row"><span class="stars">★ 4.7</span><span>👁 1.6k</span></div>
+              <div class="price-row"><strong>59,000원</strong><del>89,000원</del></div>
+            </div>
+          </article>
+
+          <article class="course-card">
+            <div class="thumb" style="background: linear-gradient(135deg, #1f001f, #3d003d);">
+              <span class="course-badge">선택</span>
+              <span class="thumb-label">AI × 창의 융합</span>
+            </div>
+            <div class="card-body">
+              <div class="instructor">유다은 교수</div>
+              <div class="course-title">AI와 창의적 사고를 결합한 문제 해결 워크숍</div>
+              <div class="meta-row"><span class="stars">★ 4.8</span><span>👁 1.9k</span></div>
+              <div class="price-row"><strong>59,000원</strong><del>89,000원</del></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="lectures">
+      <div class="section-header">
+        <h2 class="section-title">추천 강의</h2>
+        <a class="section-more" href="#">전체 보기 →</a>
+      </div>
+
+      <div class="cards-row">
+        <article class="course-card">
+          <div class="thumb" style="background: linear-gradient(135deg, #1a1a2e, #2d1b69);">
+            <span class="course-badge">사고법</span>
+            <span class="best-badge">BEST</span>
+            <span class="thumb-label">AI 사고법</span>
+          </div>
+          <div class="card-body">
+            <div class="instructor">김민준 교수</div>
+            <div class="course-title">AI 답변을 읽고, 해석하고, 재구성하는 사고 기술</div>
+            <div class="meta-row"><span class="stars">★ 4.8</span><span>👁 1.2k</span></div>
+            <div class="price-row"><strong>59,000원</strong><del>89,000원</del></div>
+          </div>
+        </article>
+
+        <article class="course-card">
+          <div class="thumb" style="background: linear-gradient(135deg, #0d2137, #1b4332);">
+            <span class="course-badge">프롬프트</span>
+            <span class="thumb-label">프롬프트 설계</span>
+          </div>
+          <div class="card-body">
+            <div class="instructor">박서연 교수</div>
+            <div class="course-title">좋은 질문을 만드는 설계법과 프롬프트 구조</div>
+            <div class="meta-row"><span class="stars">★ 4.8</span><span>👁 1.2k</span></div>
+            <div class="price-row"><strong>59,000원</strong><del>89,000원</del></div>
+          </div>
+        </article>
+
+        <article class="course-card">
+          <div class="thumb" style="background: linear-gradient(135deg, #1f0533, #6a0572);">
+            <span class="course-badge">사고력</span>
+            <span class="thumb-label">비판적 사고</span>
+          </div>
+          <div class="card-body">
+            <div class="instructor">이도현 교수</div>
+            <div class="course-title">AI 결과를 검증하고 반박하는 비판적 읽기</div>
+            <div class="meta-row"><span class="stars">★ 4.8</span><span>👁 1.2k</span></div>
+            <div class="price-row"><strong>59,000원</strong><del>89,000원</del></div>
+          </div>
+        </article>
+
+        <article class="course-card">
+          <div class="thumb" style="background: linear-gradient(135deg, #0a3d62, #1e3799);">
+            <span class="course-badge">윤리</span>
+            <span class="thumb-label">AI 윤리</span>
+          </div>
+          <div class="card-body">
+            <div class="instructor">최유진 교수</div>
+            <div class="course-title">AI를 책임 있게 사용하는 기준과 판단</div>
+            <div class="meta-row"><span class="stars">★ 4.8</span><span>👁 1.2k</span></div>
+            <div class="price-row"><strong>59,000원</strong><del>89,000원</del></div>
+          </div>
+        </article>
+
+        <article class="course-card">
+          <div class="thumb" style="background: linear-gradient(135deg, #1a2e1a, #2d5a27);">
+            <span class="course-badge">재구성</span>
+            <span class="thumb-label">지식 재구성</span>
+          </div>
+          <div class="card-body">
+            <div class="instructor">한지우 교수</div>
+            <div class="course-title">정보를 내 언어로 다시 정리하는 학습 습관</div>
+            <div class="meta-row"><span class="stars">★ 4.8</span><span>👁 1.2k</span></div>
+            <div class="price-row"><strong>59,000원</strong><del>89,000원</del></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="prompts">
+      <div class="section-header">
+        <h2 class="section-title">✨ 프롬프트 공유</h2>
+        <a class="section-more" href="#">전체 보기 →</a>
+      </div>
+      <div class="section-subtitle">학생들이 직접 공유한 AI 사고 프롬프트</div>
+
+      <div class="filter-row" aria-label="Prompt filters">
+        <span class="filter-pill active">전체</span>
+        <span class="filter-pill">🧠 비판적 사고</span>
+        <span class="filter-pill">✍️ 글쓰기</span>
+        <span class="filter-pill">💻 코드</span>
+        <span class="filter-pill">📊 분석</span>
+        <span class="filter-pill">🎨 창의성</span>
+      </div>
+
+      <div class="prompt-grid">
+        <article class="prompt-card">
+          <div class="prompt-top"><span class="category-pill">비판적 사고</span><button class="copy-btn" type="button" aria-label="Copy prompt">⧉</button></div>
+          <p class="prompt-text">이 AI 답변에서 논리적 오류, 과잉 일반화, 근거 없는 주장을 찾아줘: [답변 붙여넣기]</p>
+          <div class="prompt-footer">
+            <div class="author"><span class="avatar">김</span><span>김민준</span><span>· 2일 전</span></div>
+            <div>♥ 87&nbsp;&nbsp;↗ 34</div>
+          </div>
+        </article>
+
+        <article class="prompt-card">
+          <div class="prompt-top"><span class="category-pill">비판적 사고</span><button class="copy-btn" type="button" aria-label="Copy prompt">⧉</button></div>
+          <p class="prompt-text">내 초안을 세 가지 다른 관점에서 비판해줘. 가장 약한 논거부터 시작해서 개선 방법을 제안해줘.</p>
+          <div class="prompt-footer">
+            <div class="author"><span class="avatar">이</span><span>이서연</span><span>· 2일 전</span></div>
+            <div>♥ 87&nbsp;&nbsp;↗ 34</div>
+          </div>
+        </article>
+
+        <article class="prompt-card">
+          <div class="prompt-top"><span class="category-pill">글쓰기</span><button class="copy-btn" type="button" aria-label="Copy prompt">⧉</button></div>
+          <p class="prompt-text">Feynman 기법으로 이 개념을 설명해줘: [개념]. 내가 이해 못한 부분을 질문으로 돌려줘.</p>
+          <div class="prompt-footer">
+            <div class="author"><span class="avatar">박</span><span>박지훈</span><span>· 2일 전</span></div>
+            <div>♥ 87&nbsp;&nbsp;↗ 34</div>
+          </div>
+        </article>
+
+        <article class="prompt-card">
+          <div class="prompt-top"><span class="category-pill">글쓰기</span><button class="copy-btn" type="button" aria-label="Copy prompt">⧉</button></div>
+          <p class="prompt-text">AI 답변을 그대로 쓰지 않고, 내 언어로 재구성하려면 어떻게 해야 할까? [주제]</p>
+          <div class="prompt-footer">
+            <div class="author"><span class="avatar">최</span><span>최유진</span><span>· 2일 전</span></div>
+            <div>♥ 87&nbsp;&nbsp;↗ 34</div>
+          </div>
+        </article>
+
+        <article class="prompt-card">
+          <div class="prompt-top"><span class="category-pill">분석</span><button class="copy-btn" type="button" aria-label="Copy prompt">⧉</button></div>
+          <p class="prompt-text">이 주제에 대해 내가 놓치고 있을 관점 3가지를 알려줘: [주제]</p>
+          <div class="prompt-footer">
+            <div class="author"><span class="avatar">한</span><span>한지우</span><span>· 2일 전</span></div>
+            <div>♥ 87&nbsp;&nbsp;↗ 34</div>
+          </div>
+        </article>
+
+        <article class="prompt-card">
+          <div class="prompt-top"><span class="category-pill">비판적 사고</span><button class="copy-btn" type="button" aria-label="Copy prompt">⧉</button></div>
+          <p class="prompt-text">내가 AI에게 너무 의존하고 있는지 확인하는 질문 5가지를 만들어줘.</p>
+          <div class="prompt-footer">
+            <div class="author"><span class="avatar">오</span><span>오지훈</span><span>· 2일 전</span></div>
+            <div>♥ 87&nbsp;&nbsp;↗ 34</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="study">
+      <div class="section-header">
+        <h2 class="section-title">👥 함께 공부하기</h2>
+        <a class="section-more" href="#">전체 보기 →</a>
+      </div>
+      <div class="section-subtitle">지금 활성화된 스터디룸</div>
+
+      <div class="scroll-row">
+        <article class="room-card">
+          <div class="live-row"><span class="live-dot"></span><span>LIVE</span></div>
+          <div class="room-title">AI 사고 로그 — 7일 챌린지</div>
+          <div class="room-tag">A+I 프로그램 · 모듈 3</div>
+          <div class="participant-row">
+            <div class="participant-stack">
+              <span class="participant p1"></span>
+              <span class="participant p2"></span>
+              <span class="participant p3"></span>
+              <span class="participant p4"></span>
+            </div>
+            <span style="color: var(--text-muted); font-size: 13px;">+12명 참여 중</span>
+          </div>
+          <button class="join-btn" type="button">스터디룸 입장 →</button>
+        </article>
+
+        <article class="room-card">
+          <div class="live-row"><span class="live-dot"></span><span>LIVE</span></div>
+          <div class="room-title">비판적 읽기 워크숍</div>
+          <div class="room-tag">A+I 프로그램 · 모듈 5</div>
+          <div class="participant-row">
+            <div class="participant-stack">
+              <span class="participant p2"></span>
+              <span class="participant p4"></span>
+              <span class="participant p1"></span>
+              <span class="participant p3"></span>
+            </div>
+            <span style="color: var(--text-muted); font-size: 13px;">+8명 참여 중</span>
+          </div>
+          <button class="join-btn" type="button">스터디룸 입장 →</button>
+        </article>
+
+        <article class="room-card">
+          <div class="live-row"><span class="live-dot"></span><span>LIVE</span></div>
+          <div class="room-title">프롬프트 같이 고치기</div>
+          <div class="room-tag">A+I 프로그램 · 실습</div>
+          <div class="participant-row">
+            <div class="participant-stack">
+              <span class="participant p3"></span>
+              <span class="participant p1"></span>
+              <span class="participant p2"></span>
+              <span class="participant p4"></span>
+            </div>
+            <span style="color: var(--text-muted); font-size: 13px;">+16명 참여 중</span>
+          </div>
+          <button class="join-btn" type="button">스터디룸 입장 →</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="record">
+      <div class="section-header">
+        <h2 class="section-title">신규 강의</h2>
+        <a class="section-more" href="#">전체 보기 →</a>
+      </div>
+
+      <div class="cards-row">
+        <article class="course-card">
+          <div class="thumb" style="background: linear-gradient(135deg, #2e1a00, #5a3800);">
+            <span class="course-badge">사고법</span>
+            <span class="new-badge">NEW</span>
+            <span class="thumb-label">AI 사고법</span>
+          </div>
+          <div class="card-body">
+            <div class="instructor">정하늘 교수</div>
+            <div class="course-title">문제를 정의하는 방법부터 답을 검증하는 습관까지</div>
+            <div class="meta-row"><span class="stars">★ 4.8</span><span>👁 1.2k</span></div>
+            <div class="price-row"><strong>59,000원</strong><del>89,000원</del></div>
+          </div>
+        </article>
+
+        <article class="course-card">
+          <div class="thumb" style="background: linear-gradient(135deg, #00202e, #003d5c);">
+            <span class="course-badge">글쓰기</span>
+            <span class="new-badge">NEW</span>
+            <span class="thumb-label">프롬프트 설계</span>
+          </div>
+          <div class="card-body">
+            <div class="instructor">서민재 교수</div>
+            <div class="course-title">AI에게 더 좋은 맥락을 주는 프롬프트 작성법</div>
+            <div class="meta-row"><span class="stars">★ 4.8</span><span>👁 1.2k</span></div>
+            <div class="price-row"><strong>59,000원</strong><del>89,000원</del></div>
+          </div>
+        </article>
+
+        <article class="course-card">
+          <div class="thumb" style="background: linear-gradient(135deg, #1f001f, #3d003d);">
+            <span class="course-badge">윤리</span>
+            <span class="new-badge">NEW</span>
+            <span class="thumb-label">비판적 사고</span>
+          </div>
+          <div class="card-body">
+            <div class="instructor">유다은 교수</div>
+            <div class="course-title">AI 출력물을 비판적으로 읽고 수정하는 전략</div>
+            <div class="meta-row"><span class="stars">★ 4.8</span><span>👁 1.2k</span></div>
+            <div class="price-row"><strong>59,000원</strong><del>89,000원</del></div>
+          </div>
+        </article>
+
+        <article class="course-card">
+          <div class="thumb" style="background: linear-gradient(135deg, #001f1a, #003d2e);">
+            <span class="course-badge">재구성</span>
+            <span class="new-badge">NEW</span>
+            <span class="thumb-label">지식 재구성</span>
+          </div>
+          <div class="card-body">
+            <div class="instructor">오지훈 교수</div>
+            <div class="course-title">공부한 내용을 나의 언어로 다시 설명하는 법</div>
+            <div class="meta-row"><span class="stars">★ 4.8</span><span>👁 1.2k</span></div>
+            <div class="price-row"><strong>59,000원</strong><del>89,000원</del></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="profile">
+      <div class="section-header">
+        <h2 class="section-title">강사진</h2>
+      </div>
+
+      <div class="scroll-row">
+        <article class="instructor-card">
+          <div class="instructor-avatar inst-1"></div>
+          <div class="name">김민준</div>
+          <div class="specialty">AI 사고법 · 프롬프트 설계</div>
+          <button class="follow-btn" type="button">+ 팔로우</button>
+        </article>
+
+        <article class="instructor-card">
+          <div class="instructor-avatar inst-2"></div>
+          <div class="name">박서연</div>
+          <div class="specialty">비판적 사고 · 글쓰기</div>
+          <button class="follow-btn" type="button">+ 팔로우</button>
+        </article>
+
+        <article class="instructor-card">
+          <div class="instructor-avatar inst-3"></div>
+          <div class="name">이도현</div>
+          <div class="specialty">AI 윤리 · 검증</div>
+          <button class="follow-btn" type="button">+ 팔로우</button>
+        </article>
+
+        <article class="instructor-card">
+          <div class="instructor-avatar inst-4"></div>
+          <div class="name">최유진</div>
+          <div class="specialty">지식 재구성 · 학습 설계</div>
+          <button class="follow-btn" type="button">+ 팔로우</button>
+        </article>
+      </div>
+    </section>
+  </main>
+  <script>
+    function switchTrack(track) {
+      const tabPre = document.getElementById('tab-pre');
+      const tabPost = document.getElementById('tab-post');
+      const panelPre = document.getElementById('panel-pre');
+      const panelPost = document.getElementById('panel-post');
+
+      tabPre.classList.remove('active-pre', 'active-post');
+      tabPost.classList.remove('active-pre', 'active-post');
+
+      if (track === 'pre') {
+        tabPre.classList.add('active-pre');
+        tabPre.setAttribute('aria-selected', 'true');
+        tabPost.setAttribute('aria-selected', 'false');
+        panelPre.classList.add('visible');
+        panelPost.classList.remove('visible');
+      } else {
+        tabPost.classList.add('active-post');
+        tabPost.setAttribute('aria-selected', 'true');
+        tabPre.setAttribute('aria-selected', 'false');
+        panelPost.classList.add('visible');
+        panelPre.classList.remove('visible');
+      }
+    }
+  </script>
+</body>
+</html>
